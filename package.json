@@ -1,0 +1,41 @@
+{
+  "name": "nexus-migration-util",
+  "version": "1.0.0",
+  "description": "Migrate nexus packages",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./bin/cli",
+    "semantic-release": "semantic-release"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "bin": {
+    "nexus-migration-util": "./bin/cli.js"
+  },
+  "keywords": [
+    "Nexus",
+    "migration",
+    "blob",
+    "repository"
+  ],
+  "author": "Raz Luvaton <rluvaton@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rluvaton/nexus-migration-util.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rluvaton/nexus-migration-util/issues"
+  },
+  "homepage": "https://github.com/rluvaton/nexus-migration-util#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "@commitlint/cli": "^8.3.5",
+    "@commitlint/config-conventional": "^8.3.4",
+    "semantic-release": "^17.0.4",
+    "husky": "^4.2.5"
+  }
+}

@@ -1,0 +1,16 @@
+language: node_js
+node_js:
+    - node
+    - 10
+    - 8
+cache: npm
+install:
+    - npm install
+jobs:
+    include:
+        - stage: deploy
+          if: branch == master && !fork
+          node_js: 'node' # pre-installed version
+          script:
+              - npm install -g semantic-release@^15
+              - semantic-release
