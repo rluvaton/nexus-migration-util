@@ -29,6 +29,7 @@ Usage: nexus-migration-util <command> [options]
 
 Commands:
   nexus-migration-util download  Download from Nexus
+  nexus-migration-util upload    Upload to nexus
 
 Options:
   --version             Show version number  [boolean]

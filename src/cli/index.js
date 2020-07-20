@@ -1,5 +1,6 @@
 import * as yargs from 'yargs';
 import download from '../cmd/download';
+import upload from '../cmd/upload';
 
 const downloadCmd = {
     command: 'download',
@@ -50,6 +51,38 @@ const downloadCmd = {
     }
 }
 
+const uploadCmd = {
+    command: 'upload',
+    desc: 'Upload to nexus',
+    builder: (yargs) => yargs
+        .option('i', {
+            alias: 'index-path',
+            normalize: true,
+            type: 'string',
+            description: 'Path for the index file',
+            demandOption: true,
+        })
+        .option('artifact', {
+            alias: 'artifact-dir-path',
+            normalize: true,
+            type: 'string',
+            description: 'Path for the directory containing all the artifact downloaded',
+            demandOption: true,
+        }),
+    handler: (argv) => {
+        if (!argv._handled) {
+            upload({
+                indexFilePath: argv.i,
+                artifactsDirPath: argv.artifact,
+                nexusUrl: argv.u,
+                nexusUser: argv.user,
+                nexusPassword: argv.pass
+            });
+        }
+        argv._handled = true
+    }
+}
+
 const start = () => yargs
     .scriptName('nexus-migration-util')
     .usage('Usage: $0 <command> [options]')
@@ -75,6 +108,7 @@ const start = () => yargs
         global: true // Must be set in all options
     })
     .command(downloadCmd)
+    .command(uploadCmd)
     .help('h')
     .alias('h', 'help')
     .wrap(null)
