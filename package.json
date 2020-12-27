@@ -1,6 +1,6 @@
 {
   "name": "nexus-migration-util",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Migrate nexus packages",
   "main": "index.js",
   "scripts": {
@@ -32,15 +32,21 @@
   },
   "homepage": "https://github.com/rluvaton/nexus-migration-util#readme",
   "dependencies": {
+    "concat-stream": "^2.0.0",
     "es6-promise-pool": "^2.5.0",
     "esm": "^3.2.25",
+    "form-data": "^3.0.0",
     "glob": "^7.1.6",
+    "make-dir": "^3.1.0",
+    "progress": "^2.0.3",
+    "swagger-client": "^3.10.12",
     "yargs": "^15.4.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^8.3.5",
     "@commitlint/config-conventional": "^8.3.4",
     "@types/yargs": "^15.0.5",
+    "axios": "^0.20.0",
     "husky": "^4.2.5",
     "semantic-release": "^17.0.4"
   }

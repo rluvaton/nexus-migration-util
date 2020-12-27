@@ -1,6 +1,15 @@
 import * as yargs from 'yargs';
-import download from '../cmd/download';
+import download from '../cmd/download/';
 import upload from '../cmd/upload';
+
+const getGlobalOptions = (argv) => {
+    return {
+        nexusUrl: argv.u,
+        nexusUser: argv.user,
+        nexusPassword: argv.pass,
+        nexusVersion: argv.v
+    };
+}
 
 const downloadCmd = {
     command: 'download',
@@ -12,7 +21,7 @@ const downloadCmd = {
                 string: true,
                 normalize: true,
                 default: './index.json',
-                description: 'Path for the index file (for uploading the files)'
+                description: 'Path for the index file (to be able to upload the files later)'
             })
             .option('o', {
                 alias: 'output',
@@ -21,30 +30,28 @@ const downloadCmd = {
                 default: './',
                 description: 'Directory path for the downloaded files'
             })
-            .option('b', {
-                alias: 'blob-dir',
-                normalize: true,
-                type: 'string',
-                description: 'Path to the blob dir',
-                demandOption: true,
-            })
-            .option('r', {
-                alias: 'ignore-repo',
+            .option('ignore-repo', {
                 type: 'array',
                 description: 'Repositories to ignore',
-                default: [],
+                // default: [],
                 demandOption: false,
-            }),
+            })
+            .option('include-repo', {
+                type: 'array',
+                description: 'Repositories to include (if not specified than all repositories will be included)',
+                // default: [],
+                demandOption: false,
+            })
+            .conflicts('ignore-repo', 'include-repo')
+            .conflicts('include-repo', 'ignore-repo'),
     handler: (argv) => {
         if (!argv._handled) {
             download({
                 indexFilePath: argv.index,
-                blobDir: argv.b,
                 outputDir: argv.output,
-                ignoreRepositories: argv.r,
-                nexusUrl: argv.u,
-                nexusUser: argv.user,
-                nexusPassword: argv.pass
+                ignoreRepositories: argv['ignore-repo'],
+                includeRepositories: argv['include-repo'],
+                ...getGlobalOptions(argv)
             });
         }
         argv._handled = true
@@ -68,15 +75,21 @@ const uploadCmd = {
             type: 'string',
             description: 'Path for the directory containing all the artifact downloaded',
             demandOption: true,
+        })
+        .option('mapper', {
+            alias: 'repository-mapper',
+            normalize: true,
+            type: 'string',
+            description: 'Path for json object with key as current repository and value to the target repository',
+            demandOption: false,
         }),
     handler: (argv) => {
         if (!argv._handled) {
             upload({
                 indexFilePath: argv.i,
                 artifactsDirPath: argv.artifact,
-                nexusUrl: argv.u,
-                nexusUser: argv.user,
-                nexusPassword: argv.pass
+                mapperPath: argv.mapper,
+                ...getGlobalOptions(argv)
             });
         }
         argv._handled = true
@@ -89,7 +102,14 @@ const start = () => yargs
     .option('u', {
         alias: 'url',
         type: 'string',
-        description: 'URL of the nexus',
+        description: 'URL of the nexus API',
+        demandOption: true,
+        global: true // Must be set in all options
+    })
+    .options('v', {
+        alias: 'nexus-api-version',
+        type: 'string',
+        description: 'The Nexus API version',
         demandOption: true,
         global: true // Must be set in all options
     })
@@ -113,5 +133,6 @@ const start = () => yargs
     .alias('h', 'help')
     .wrap(null)
     .argv;
+    
 
 export default start;
