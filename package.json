@@ -40,14 +40,14 @@
     "make-dir": "^3.1.0",
     "progress": "^2.0.3",
     "swagger-client": "^3.10.12",
-    "yargs": "^15.4.1"
+    "yargs": "^16.2.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^8.3.5",
-    "@commitlint/config-conventional": "^8.3.4",
-    "@types/yargs": "^15.0.5",
-    "axios": "^0.20.0",
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-conventional": "^11.0.0",
+    "@types/yargs": "^15.0.12",
+    "axios": "^0.21.1",
     "husky": "^4.2.5",
-    "semantic-release": "^17.0.4"
+    "semantic-release": "^17.3.0"
   }
 }
