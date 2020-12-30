@@ -1,8 +1,8 @@
 language: node_js
 node_js:
     - node
+    - 12
     - 10
-    - 8
 cache: npm
 install:
     - npm install
@@ -12,5 +12,4 @@ jobs:
           if: branch == master && !fork
           node_js: 'node' # pre-installed version
           script:
-              - npm install -g semantic-release@^15
-              - semantic-release
+              - npx semantic-release
