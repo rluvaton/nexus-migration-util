@@ -1,4 +1,3 @@
-
 import fs from 'fs';
 import axios from 'axios';
 import ProgressBar from 'progress';
@@ -8,7 +7,6 @@ import FormData from 'form-data';
 import concat from 'concat-stream';
 
 export async function downloadFile(url, destPath, doneCb = noop) {
-    console.debug('Connecting …')
     const {data, headers} = await axios({
         url,
         method: 'GET',
@@ -16,12 +14,10 @@ export async function downloadFile(url, destPath, doneCb = noop) {
     });
 
     const totalLength = headers['content-length'];
-    if(!totalLength) {
-        debugger;
+    if (!totalLength) {
+        console.warn('totalLength is falsy!', {totalLength, url});
     }
-    console.log(totalLength)
 
-    console.debug('Start downloading')
     const progressBar = new ProgressBar('-> downloading [:bar] :percent :etas', {
         width: 40,
         complete: '=',
@@ -37,15 +33,15 @@ export async function downloadFile(url, destPath, doneCb = noop) {
     data.on('end', doneCb);
 }
 
-export async function uploadFile({method, url, username, password, formDataAppend}) {
+export async function uploadFile({method, url, username, password, format, filePath, fileReadStream}) {
     return new Promise((resolve, reject) => {
-
         let usedPromise = false;
-        const fd = new FormData()
+        const fd = new FormData();
 
-        Object.entries(formDataAppend).forEach(([key, value]) => {
-            fd.append(key, value);
+        fd.append(`${format}.asset`, fileReadStream, {
+            filepath: filePath,
         });
+
         fd.pipe(concat({encoding: 'buffer'}, data => {
             axios({
                 method,
@@ -55,8 +51,8 @@ export async function uploadFile({method, url, username, password, formDataAppen
                     "Authorization": 'Basic ' + Buffer.from(username + ':' + password).toString('base64'),
                     ...fd.getHeaders()
                 },
-				maxContentLength: Infinity,
-				maxBodyLength: Infinity,
+                maxContentLength: Infinity,
+                maxBodyLength: Infinity,
                 data: data
             }).then((response) => {
                 usedPromise = true;

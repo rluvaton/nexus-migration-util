@@ -70,13 +70,16 @@ async function getAllAssetsForRepositories(repositories) {
 
 
 async function createDirectoryStructureForExporting(repositoriesAssets, outputDir) {
-    for (const format of Object.keys(repositoriesAssets)) {
-        await createDirectory(path.join(outputDir, format));
+    return Promise.all(
+        Object.keys(repositoriesAssets).map(async format => {
+            await createDirectory(path.join(outputDir, format));
 
-        for (const repository of Object.keys(repositoriesAssets[format])) {
-            await createDirectory(path.join(outputDir, format, repository));
-        }
-    }
+            return Promise.all(
+                Object.keys(repositoriesAssets[format])
+                    .map(async repository => createDirectory(path.join(outputDir, format, repository))))
+
+        })
+    );
 }
 
 const download = async ({
@@ -112,9 +115,8 @@ const download = async ({
 
     function createDownloadTask(asset, outputDir) {
         return async () => {
-            const {repository, downloadUrl, id} = asset;
+            const {repository, downloadUrl, id: fileName} = asset;
             console.debug(`download ${repository}/${downloadUrl} - id`);
-            const fileName = id + path.extname(downloadUrl);
 
             try {
                 await downloadFile(downloadUrl, path.join(outputDir, fileName))
@@ -149,6 +151,5 @@ const download = async ({
 
     console.log('completed!');
 };
-
 
 export default download;

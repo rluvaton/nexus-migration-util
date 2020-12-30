@@ -2,7 +2,6 @@ import * as path from 'path';
 import {isExistsSync, readFile, writeFile} from '../../helper/fs-helper'
 import {uploadFile} from '../remote-file-helper';
 import * as fs from "fs";
-import {fileExtensionsForFormat} from './asset-map';
 
 const parseIndexFile = async (indexFilePath) => {
     if (!indexFilePath || !(isExistsSync(indexFilePath))) {
@@ -36,35 +35,26 @@ const upload = async ({
 
     function createUploadTask(asset, outputDir) {
         return async () => {
-            const {repository, format, fileName} = asset;
+            const {repository, format, id, downloadUrl, path: filePath} = asset;
 
-            const filePath = path.join(outputDir, format, repository, fileName);
-            console.debug(`⏱ Upload ${repository}/${filePath}`);
+            const realFilePath = path.join(outputDir, format, repository, id);
+            console.debug(`⏱ Upload ${repository}/${realFilePath}`);
 
             const uploadUrl = `${nexusUrl}/service/rest/v1/components?repository=${repositoryMapper[repository] || repository}`;
-            const formDataAppend = {};
-            const fileExtensions = fileExtensionsForFormat[format];
-
             try {
-                if (!fileExtensions) {
-                    throw new Error(`upload not supported for this format (${format})`);
-                }
-
-                if (!fileExtensions.some(extension => filePath.endsWith(extension))) {
-                    throw new Error(`format ${format} should be with one of these file extensions - ${fileExtensions.join(', ')}`);
-                }
-
-                formDataAppend[`${format}.asset`] = fs.createReadStream(filePath);
+                const fileReadStream = fs.createReadStream(realFilePath);
 
                 await uploadFile({
                     method: 'post',
                     url: uploadUrl,
                     username: nexusUser,
                     password: nexusPassword,
-                    formDataAppend
+                    format,
+                    filePath,
+                    fileReadStream,
                 });
             } catch (error) {
-                failed.push({...asset, outputDir, filePath, error});
+                failed.push({...asset, outputDir, filePath: realFilePath, error: error.message});
                 const status = error && error.response ? error.response.statusText : undefined;
                 const message = error && error.response ? error.response.data : undefined;
                 const errorObj = status && message !== undefined ? {status, message} : error;
@@ -89,6 +79,18 @@ const upload = async ({
 
     console.log('completed!');
 };
+
+/**
+ * Get file name with extension from file path
+ * @param filePath
+ * @return {string}
+ * @private
+ * @internal
+ */
+export function _getFileNameFromPath(filePath) {
+    return filePath.slice(filePath.lastIndexOf('/') + 1)
+}
+
 
 
 export default upload;

@@ -6,8 +6,7 @@ const getGlobalOptions = (argv) => {
     return {
         nexusUrl: argv.u,
         nexusUser: argv.user,
-        nexusPassword: argv.pass,
-        nexusVersion: argv.v
+        nexusPassword: argv.pass
     };
 }
 
@@ -106,13 +105,6 @@ const start = () => yargs
         demandOption: true,
         global: true // Must be set in all options
     })
-    .options('v', {
-        alias: 'nexus-api-version',
-        type: 'string',
-        description: 'The Nexus API version',
-        demandOption: true,
-        global: true // Must be set in all options
-    })
     .option('user', {
         alias: 'nexus-user',
         type: 'string',
@@ -133,6 +125,6 @@ const start = () => yargs
     .alias('h', 'help')
     .wrap(null)
     .argv;
-    
+
 
 export default start;
