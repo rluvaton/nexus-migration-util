@@ -6,10 +6,13 @@ import FormData from 'form-data';
 
 import concat from 'concat-stream';
 
-export async function downloadFile(url, destPath, doneCb = noop) {
+export async function downloadFile(url, destPath, username, password, doneCb = noop) {
     const {data, headers} = await axios({
         url,
         method: 'GET',
+        headers: {
+            "Authorization": 'Basic ' + Buffer.from(username + ':' + password).toString('base64'),
+        },
         responseType: 'stream'
     });
 
