@@ -96,12 +96,12 @@ const download = async ({
 
     const downloadsMetadata = {};
 
-    nexusSdk = await getNexus(nexusUrl);
+    nexusSdk = await getNexus(nexusUrl, {user: nexusUser, pass: nexusPassword});
 
     // Meaning that we need to fetch the repositories list
     if (includeRepositories.length === 0) {
-        includeRepositories = includeRepositories.concat(
-            (await (nexusSdk.Repositories || nexusSdk.repositories).getRepositories_1()).obj
+        const repos = await (nexusSdk.Repositories || nexusSdk.repositories).getRepositories_1();
+        includeRepositories = includeRepositories.concat(repos.obj
                 .map(({name}) => name)
         );
     }
@@ -119,7 +119,7 @@ const download = async ({
             console.debug(`download ${repository}/${downloadUrl} - id`);
 
             try {
-                await downloadFile(downloadUrl, path.join(outputDir, fileName))
+                await downloadFile(downloadUrl, path.join(outputDir, fileName), nexusUser, nexusPassword)
                 downloadsMetadata[fileName] = asset;
             } catch (error) {
                 failed.push({...asset, outputDir, error});
