@@ -1,6 +1,7 @@
 import * as path from 'path';
 import {isExistsSync, readFile, writeFile} from '../../helper/fs-helper'
-import {uploadFile} from '../remote-file-helper';
+import { uploadFile } from '../remote-file-helper';
+import { createPromisePool } from '../../helper/promise-pool';
 import * as fs from "fs";
 
 const parseIndexFile = async (indexFilePath) => {
@@ -68,7 +69,7 @@ const upload = async ({
     const uploadTasks = artifactsMetadata.map((asset) => createUploadTask(asset, artifactsDirPath));
 
     try {
-        await Promise.all(uploadTasks.map((uploadTask) => uploadTask()));
+        await createPromisePool(uploadTasks, 3);
     } catch (e) {
         console.error('Failed running the upload tasks.', e);
     }
