@@ -67,15 +67,6 @@ const upload = async ({
     const artifactsMetadata = await parseIndexFile(indexFilePath);
 
     const uploadTasks = artifactsMetadata.map((asset) => createUploadTask(asset, artifactsDirPath));
-    
-    const downloadTasks = [];
-    Object.values(repositoriesAssets).forEach(repositoriesForFormat =>
-        Object.values(repositoriesForFormat).forEach(assetsForRepository =>
-            assetsForRepository.forEach(asset =>
-                downloadTasks.push(createDownloadTask(asset, path.join(outputDir, asset.format, asset.repository)))
-            )
-        )
-    )
 
     try {
         await createPromisePool(uploadTasks, 3);
